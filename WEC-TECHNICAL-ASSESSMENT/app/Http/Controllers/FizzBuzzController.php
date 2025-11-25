@@ -36,21 +36,9 @@ class FizzBuzzController extends Controller
                 $inputNumber = $validated['number'];
             
                 // Get custom rules from the request
-                $customRulesArray = [];
-                if ($request->has('custom_rules')) {
-                    $rulesInput = $request->input('custom_rules');
-                    foreach ($rulesInput as $rule) {
-                        if (isset($rule['number']) && isset($rule['word']) && $rule['number'] !== '' && $rule['word'] !== '') {
-                            $ruleNumber = (int)$rule['number'];
-                            $ruleWord = $rule['word'];
-                            $customRules[$ruleNumber] = $ruleWord;
-                            $customRulesArray[] = [
-                                'number' => $ruleNumber,
-                                'word' => $ruleWord,
-                            ];
-                        }
-                    }
-                }
+                $customRulesData = $this->extractCustomRules($request);
+                $customRules = $customRulesData['rules'];
+                $customRulesArray = $customRulesData['array'];
 
                 $result = $this->processFizzBuzz($inputNumber, $customRules);
             } catch (\Illuminate\Validation\ValidationException $e) {
@@ -122,21 +110,9 @@ class FizzBuzzController extends Controller
                 $combineStartY = $combineStartX + 1;
 
                 // Get custom rules from the request
-                $combineCustomRulesArray = [];
-                if ($request->has('custom_rules')) {
-                    $rulesInput = $request->input('custom_rules');
-                    foreach ($rulesInput as $rule) {
-                        if (isset($rule['number']) && isset($rule['word']) && $rule['number'] !== '' && $rule['word'] !== '') {
-                            $ruleNumber = (int)$rule['number'];
-                            $ruleWord = $rule['word'];
-                            $customRules[$ruleNumber] = $ruleWord;
-                            $combineCustomRulesArray[] = [
-                                'number' => $ruleNumber,
-                                'word' => $ruleWord,
-                            ];
-                        }
-                    }
-                }
+                $customRulesData = $this->extractCustomRules($request);
+                $customRules = $customRulesData['rules'];
+                $combineCustomRulesArray = $customRulesData['array'];
 
                 $combineResult = $this->processCombine($combineInputNumber, $combineStartX, $combineStartY, $customRules);
             } catch (\Illuminate\Validation\ValidationException $e) {
@@ -159,6 +135,9 @@ class FizzBuzzController extends Controller
     protected function processFizzBuzz(int $maxNumber, array $customRules = []): array
     {
         $result = [];
+        
+        // Sort custom rules once before the loop for better performance
+        ksort($customRules);
 
         for ($i = 0; $i <= $maxNumber; $i++) {
             $outputData = $this->getFizzBuzzOutput($i, $customRules);
@@ -188,9 +167,7 @@ class FizzBuzzController extends Controller
         }
 
         // Check custom rules and concatenate their words
-        // Sort rules from smallest to largest for natural ordering
-        ksort($customRules);
-        
+        // Rules are already sorted (should be sorted before calling this method)
         foreach ($customRules as $ruleNumber => $word) {
             // If the number is a multiple of the custom rule (0 applies to all rules)
             if ($ruleNumber > 0 && $number % $ruleNumber === 0) {
@@ -249,6 +226,9 @@ class FizzBuzzController extends Controller
         // Get Fibonacci sequence
         $fibonacciSequence = $this->processFibonacci($maxNumber, $startX, $startY);
         
+        // Sort custom rules once before the loop for better performance
+        ksort($customRules);
+        
         $result = [];
         
         foreach ($fibonacciSequence as $num) {
@@ -261,5 +241,44 @@ class FizzBuzzController extends Controller
         }
 
         return $result;
+    }
+
+    /**
+     * Extract and validate custom rules from the request
+     * 
+     * @param Request $request
+     * @return array Returns ['rules' => array, 'array' => array]
+     */
+    protected function extractCustomRules(Request $request): array
+    {
+        $customRules = [];
+        $customRulesArray = [];
+        
+        if ($request->has('custom_rules')) {
+            $rulesInput = $request->input('custom_rules');
+            if (is_array($rulesInput)) {
+                foreach ($rulesInput as $rule) {
+                    if (isset($rule['number']) && isset($rule['word']) 
+                        && $rule['number'] !== '' && $rule['word'] !== '') {
+                        $ruleNumber = (int)$rule['number'];
+                        $ruleWord = trim($rule['word']);
+                        
+                        // Only add if number is positive and word is not empty
+                        if ($ruleNumber > 0 && $ruleWord !== '') {
+                            $customRules[$ruleNumber] = $ruleWord;
+                            $customRulesArray[] = [
+                                'number' => $ruleNumber,
+                                'word' => $ruleWord,
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        
+        return [
+            'rules' => $customRules,
+            'array' => $customRulesArray,
+        ];
     }
 }

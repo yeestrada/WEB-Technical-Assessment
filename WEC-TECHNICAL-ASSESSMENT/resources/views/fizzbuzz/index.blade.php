@@ -89,14 +89,14 @@
                                 @foreach($customRulesArray as $index => $rule)
                                 <div class="rule-input">
                                     <input type="number" name="custom_rules[{{ $index }}][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1" value="{{ $rule['number'] }}">
-                                    <input type="text" name="custom_rules[{{ $index }}][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}" value="{{ $rule['word'] }}">
+                                    <input type="text" name="custom_rules[{{ $index }}][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}" value="{{ $rule['word'] }}" onblur="capitalizeFirstLetter(this)">
                                     <button type="button" onclick="this.parentElement.remove()">×</button>
                                 </div>
                                 @endforeach
                             @else
                                 <div class="rule-input">
                                     <input type="number" name="custom_rules[0][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1">
-                                    <input type="text" name="custom_rules[0][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}">
+                                    <input type="text" name="custom_rules[0][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                                 </div>
                             @endif
                         </div>
@@ -204,14 +204,14 @@
                                 @foreach($combineCustomRulesArray as $index => $rule)
                                 <div class="rule-input">
                                     <input type="number" name="custom_rules[{{ $index }}][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1" value="{{ $rule['number'] }}">
-                                    <input type="text" name="custom_rules[{{ $index }}][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}" value="{{ $rule['word'] }}">
+                                    <input type="text" name="custom_rules[{{ $index }}][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}" value="{{ $rule['word'] }}" onblur="capitalizeFirstLetter(this)">
                                     <button type="button" onclick="this.parentElement.remove()">×</button>
                                 </div>
                                 @endforeach
                             @else
                                 <div class="rule-input">
                                     <input type="number" name="custom_rules[0][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1">
-                                    <input type="text" name="custom_rules[0][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}">
+                                    <input type="text" name="custom_rules[0][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                                 </div>
                             @endif
                         </div>
@@ -298,6 +298,12 @@
             }
         }
 
+        function capitalizeFirstLetter(input) {
+            if (input.value && input.value.length > 0) {
+                input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
+            }
+        }
+
         function addRule() {
             const container = document.getElementById('rulesContainer');
             const existingRules = container.querySelectorAll('.rule-input');
@@ -306,7 +312,7 @@
             div.className = 'rule-input';
             div.innerHTML = `
                 <input type="number" name="custom_rules[${ruleCount}][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1">
-                <input type="text" name="custom_rules[${ruleCount}][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}">
+                <input type="text" name="custom_rules[${ruleCount}][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                 <button type="button" onclick="this.parentElement.remove()">×</button>
             `;
             container.appendChild(div);
@@ -320,7 +326,7 @@
             div.className = 'rule-input';
             div.innerHTML = `
                 <input type="number" name="custom_rules[${ruleCount}][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1">
-                <input type="text" name="custom_rules[${ruleCount}][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}">
+                <input type="text" name="custom_rules[${ruleCount}][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                 <button type="button" onclick="this.parentElement.remove()">×</button>
             `;
             container.appendChild(div);
