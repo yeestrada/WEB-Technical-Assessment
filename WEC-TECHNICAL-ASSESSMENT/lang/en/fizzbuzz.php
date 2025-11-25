@@ -70,6 +70,7 @@ return [
         'invalid_custom_rule_max' => 'Please enter a valid number between 1 and :max for custom rules',
         'max_number_exceeded' => 'The maximum allowed number is :max.',
         'processing_error' => 'An error occurred while processing. Please try with a smaller number.',
+        'ignored_standard_rules' => 'Rules for numbers 3 and 5 have been ignored because they are already included in the system (Fizz and Buzz).',
     ],
     'download' => [
         'fizzbuzz_title' => 'FizzBuzz Results',
