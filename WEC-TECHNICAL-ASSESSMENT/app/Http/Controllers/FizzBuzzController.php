@@ -89,7 +89,7 @@ class FizzBuzzController extends Controller
                 ]);
 
                 $fibInputNumber = $validated['number'];
-                $startX = $validated['start_x'] ?? $request->input('start_x', 0);
+                $startX = $validated['start_x'] ?? 0;
                 // The second value is automatically the next consecutive number
                 $startY = $startX + 1;
 
@@ -138,7 +138,7 @@ class FizzBuzzController extends Controller
                 ]);
 
                 $combineInputNumber = $validated['number'];
-                $combineStartX = $validated['start_x'] ?? $request->input('start_x', 0);
+                $combineStartX = $validated['start_x'] ?? 0;
                 // The second value is automatically the next consecutive number
                 $combineStartY = $combineStartX + 1;
 
