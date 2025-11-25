@@ -70,7 +70,7 @@ return [
         'invalid_custom_rule_max' => 'Por favor ingrese un número válido entre 1 y :max para las reglas personalizadas',
         'max_number_exceeded' => 'El número máximo permitido es :max.',
         'processing_error' => 'Ocurrió un error al procesar. Por favor intente con un número más pequeño.',
-        'ignored_standard_rules' => 'Las reglas para los números 3 y 5 han sido ignoradas porque ya están incluidas en el sistema (Fizz y Buzz).',
+        'ignored_standard_rules' => 'Las reglas para los números 3 y 5 serán ignoradas porque ya están incluidas en el sistema (Fizz y Buzz).',
     ],
     'download' => [
         'fizzbuzz_title' => 'Resultados de FizzBuzz',

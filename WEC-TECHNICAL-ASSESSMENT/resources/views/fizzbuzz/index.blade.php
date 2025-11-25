@@ -84,11 +84,9 @@
                     
                     <div class="custom-rules">
                         <label>{{ __('fizzbuzz.fizzbuzz.custom_rules') }}</label>
-                        @if(isset($ignoredRules) && count($ignoredRules) > 0)
                         <div class="alert alert-warning" style="background-color: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 1rem;">
                             {{ __('fizzbuzz.validation.ignored_standard_rules') }}
                         </div>
-                        @endif
                         <div id="rulesContainer">
                             @if(isset($customRulesArray) && count($customRulesArray) > 0)
                                 @foreach($customRulesArray as $index => $rule)
@@ -204,11 +202,9 @@
                     </div>
                     <div class="custom-rules">
                         <label>{{ __('fizzbuzz.combine.custom_rules') }}</label>
-                        @if(isset($ignoredRules) && count($ignoredRules) > 0)
                         <div class="alert alert-warning" style="background-color: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 1rem;">
                             {{ __('fizzbuzz.validation.ignored_standard_rules') }}
                         </div>
-                        @endif
                         <div id="combineRulesContainer">
                             @if(isset($combineCustomRulesArray) && count($combineCustomRulesArray) > 0)
                                 @foreach($combineCustomRulesArray as $index => $rule)
