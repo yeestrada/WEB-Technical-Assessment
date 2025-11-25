@@ -74,7 +74,7 @@
                     @endif
                     <div class="form-group">
                         <label for="number">{{ __('fizzbuzz.fizzbuzz.number_label') }}</label>
-                        <input type="number" id="number" name="number" min="0" step="1"
+                        <input type="number" id="number" name="number" min="0" max="100000" step="1"
                                value="{{ $inputNumber ?? '' }}" required
                                class="{{ $errors->has('number') ? 'input-error' : '' }}">
                         @if($errors->has('number'))
@@ -88,14 +88,14 @@
                             @if(isset($customRulesArray) && count($customRulesArray) > 0)
                                 @foreach($customRulesArray as $index => $rule)
                                 <div class="rule-input">
-                                    <input type="number" name="custom_rules[{{ $index }}][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1" value="{{ $rule['number'] }}">
+                                    <input type="number" name="custom_rules[{{ $index }}][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1" max="100000" value="{{ $rule['number'] }}">
                                     <input type="text" name="custom_rules[{{ $index }}][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}" value="{{ $rule['word'] }}" onblur="capitalizeFirstLetter(this)">
                                     <button type="button" onclick="this.parentElement.remove()">×</button>
                                 </div>
                                 @endforeach
                             @else
                                 <div class="rule-input">
-                                    <input type="number" name="custom_rules[0][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1">
+                                    <input type="number" name="custom_rules[0][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1" max="100000">
                                     <input type="text" name="custom_rules[0][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                                 </div>
                             @endif
@@ -139,12 +139,12 @@
                     @endif
                     <div class="form-group">
                         <label>{{ __('fizzbuzz.fibonacci.initial_value') }}</label>
-                        <input type="number" name="start_x" placeholder="{{ __('fizzbuzz.fibonacci.start_x') }}" value="{{ isset($startX) ? $startX : 0 }}">
+                        <input type="number" name="start_x" placeholder="{{ __('fizzbuzz.fibonacci.start_x') }}" min="-10000000" max="10000000" value="{{ isset($startX) ? $startX : 0 }}">
                         <small style="color: #666; font-size: 0.875rem; display: block; margin-top: 0.25rem;">{{ __('fizzbuzz.fibonacci.initial_value_note') }}</small>
                     </div>
                     <div class="form-group">
                         <label for="fib_number">{{ __('fizzbuzz.fibonacci.number_label') }}</label>
-                        <input type="number" id="fib_number" name="number" min="0" step="1"
+                        <input type="number" id="fib_number" name="number" min="0" max="10000000" step="1"
                                value="{{ $fibInputNumber ?? '' }}" required
                                class="{{ $errors->has('number') ? 'input-error' : '' }}">
                         @if($errors->has('number'))
@@ -185,12 +185,12 @@
                     @endif
                     <div class="form-group">
                         <label>{{ __('fizzbuzz.combine.initial_value') }}</label>
-                        <input type="number" name="start_x" placeholder="{{ __('fizzbuzz.combine.start_x') }}" value="{{ isset($combineStartX) ? $combineStartX : 0 }}">
+                        <input type="number" name="start_x" placeholder="{{ __('fizzbuzz.combine.start_x') }}" min="-10000000" max="10000000" value="{{ isset($combineStartX) ? $combineStartX : 0 }}">
                         <small style="color: #666; font-size: 0.875rem; display: block; margin-top: 0.25rem;">{{ __('fizzbuzz.combine.initial_value_note') }}</small>
                     </div>
                     <div class="form-group">
                         <label for="combine_number">{{ __('fizzbuzz.combine.number_label') }}</label>
-                        <input type="number" id="combine_number" name="number" min="0" step="1"
+                        <input type="number" id="combine_number" name="number" min="0" max="10000000" step="1"
                                value="{{ $combineInputNumber ?? '' }}" required
                                class="{{ $errors->has('number') ? 'input-error' : '' }}">
                         @if($errors->has('number'))
@@ -203,14 +203,14 @@
                             @if(isset($combineCustomRulesArray) && count($combineCustomRulesArray) > 0)
                                 @foreach($combineCustomRulesArray as $index => $rule)
                                 <div class="rule-input">
-                                    <input type="number" name="custom_rules[{{ $index }}][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1" value="{{ $rule['number'] }}">
+                                    <input type="number" name="custom_rules[{{ $index }}][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1" max="10000000" value="{{ $rule['number'] }}">
                                     <input type="text" name="custom_rules[{{ $index }}][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}" value="{{ $rule['word'] }}" onblur="capitalizeFirstLetter(this)">
                                     <button type="button" onclick="this.parentElement.remove()">×</button>
                                 </div>
                                 @endforeach
                             @else
                                 <div class="rule-input">
-                                    <input type="number" name="custom_rules[0][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1">
+                                    <input type="number" name="custom_rules[0][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1" max="10000000">
                                     <input type="text" name="custom_rules[0][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                                 </div>
                             @endif
@@ -254,6 +254,9 @@
             showInstructions: @json(__('fizzbuzz.info_card.show_instructions')),
             hideInstructions: @json(__('fizzbuzz.info_card.hide_instructions')),
             invalidNumber: @json(__('fizzbuzz.validation.invalid_number')),
+            invalidNumberMax: @json(__('fizzbuzz.validation.invalid_number_max')),
+            invalidStartXMax: @json(__('fizzbuzz.validation.invalid_start_x_max')),
+            invalidCustomRuleMax: @json(__('fizzbuzz.validation.invalid_custom_rule_max')),
             downloadFizzBuzzTitle: @json(__('fizzbuzz.download.fizzbuzz_title')),
             downloadFizzBuzzSeparator: @json(__('fizzbuzz.download.fizzbuzz_separator')),
             downloadFibonacciTitle: @json(__('fizzbuzz.download.fibonacci_title')),
@@ -270,15 +273,67 @@
         }
 
         function validateForm(form) {
+            // Determine which form it is and set appropriate limits
+            const formId = form.id;
+            let maxAllowed, minAllowed, maxCustomRule;
+            
+            if (formId === 'fizzbuzzForm') {
+                // FizzBuzz: max 100000
+                maxAllowed = 100000;
+                minAllowed = 0;
+                maxCustomRule = 100000;
+            } else if (formId === 'fibonacciForm') {
+                // Fibonacci: max 10000000
+                maxAllowed = 10000000;
+                minAllowed = -10000000;
+                maxCustomRule = 10000000; // Not used for Fibonacci, but set for consistency
+            } else if (formId === 'combineForm') {
+                // Combine: max 10000000
+                maxAllowed = 10000000;
+                minAllowed = -10000000;
+                maxCustomRule = 10000000;
+            } else {
+                // Default fallback
+                maxAllowed = 100000;
+                minAllowed = 0;
+                maxCustomRule = 100000;
+            }
+            
+            // Validate main number input
             const numberInput = form.querySelector('input[name="number"]');
             if (numberInput) {
                 const value = parseInt(numberInput.value);
-                if (isNaN(value) || value < 0) {
-                    alert(translations.invalidNumber);
+                if (isNaN(value) || value < 0 || value > maxAllowed) {
+                    alert(translations.invalidNumberMax.replace(':max', maxAllowed));
                     numberInput.focus();
                     return false;
                 }
             }
+            
+            // Validate start_x input (for Fibonacci and Combine)
+            const startXInput = form.querySelector('input[name="start_x"]');
+            if (startXInput && startXInput.value !== '') {
+                const value = parseInt(startXInput.value);
+                if (isNaN(value) || value < minAllowed || value > maxAllowed) {
+                    alert(translations.invalidStartXMax.replace(':min', minAllowed).replace(':max', maxAllowed));
+                    startXInput.focus();
+                    return false;
+                }
+            }
+            
+            // Validate custom rules inputs
+            const customRuleInputs = form.querySelectorAll('input[name^="custom_rules"][name$="[number]"]');
+            for (let input of customRuleInputs) {
+                if (input.value !== '') {
+                    const value = parseInt(input.value);
+                    if (isNaN(value) || value < 1 || value > maxCustomRule) {
+                        alert(translations.invalidCustomRuleMax.replace(':max', maxCustomRule));
+                        input.focus();
+                        return false;
+                    }
+                }
+            }
+            
             return true;
         }
 
@@ -311,7 +366,7 @@
             const div = document.createElement('div');
             div.className = 'rule-input';
             div.innerHTML = `
-                <input type="number" name="custom_rules[${ruleCount}][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1">
+                <input type="number" name="custom_rules[${ruleCount}][number]" placeholder="{{ __('fizzbuzz.fizzbuzz.number_placeholder') }}" min="1" max="100000">
                 <input type="text" name="custom_rules[${ruleCount}][word]" placeholder="{{ __('fizzbuzz.fizzbuzz.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                 <button type="button" onclick="this.parentElement.remove()">×</button>
             `;
@@ -325,7 +380,7 @@
             const div = document.createElement('div');
             div.className = 'rule-input';
             div.innerHTML = `
-                <input type="number" name="custom_rules[${ruleCount}][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1">
+                <input type="number" name="custom_rules[${ruleCount}][number]" placeholder="{{ __('fizzbuzz.combine.number_placeholder') }}" min="1" max="10000000">
                 <input type="text" name="custom_rules[${ruleCount}][word]" placeholder="{{ __('fizzbuzz.combine.word_placeholder') }}" onblur="capitalizeFirstLetter(this)">
                 <button type="button" onclick="this.parentElement.remove()">×</button>
             `;
@@ -353,7 +408,9 @@
             content += translations.downloadFizzBuzzSeparator + '\n\n';
             
             items.forEach((item, index) => {
-                content += item.textContent.trim();
+                // Get full text from title attribute, fallback to textContent if title is not available
+                const fullText = item.getAttribute('title') || item.textContent.trim();
+                content += fullText;
                 if (index < items.length - 1) {
                     content += ', ';
                 }
@@ -397,7 +454,9 @@
             content += translations.downloadCombineSeparator + '\n\n';
             
             items.forEach((item, index) => {
-                content += item.textContent.trim();
+                // Get full text from title attribute, fallback to textContent if title is not available
+                const fullText = item.getAttribute('title') || item.textContent.trim();
+                content += fullText;
                 if (index < items.length - 1) {
                     content += ', ';
                 }
