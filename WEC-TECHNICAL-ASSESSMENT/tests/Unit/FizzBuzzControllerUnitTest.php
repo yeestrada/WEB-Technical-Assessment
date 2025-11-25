@@ -231,6 +231,58 @@ class FizzBuzzControllerUnitTest extends TestCase
         
         $this->assertEmpty($result['rules']);
         $this->assertEmpty($result['array']);
+        $this->assertEmpty($result['ignored']);
+    }
+
+    /**
+     * Test extractCustomRules filters out rules for 3 and 5 when filterStandardRules is true
+     */
+    public function test_extract_custom_rules_filters_standard_rules(): void
+    {
+        $method = $this->getProtectedMethod('extractCustomRules');
+        
+        $request = Request::create('/test', 'GET', [
+            'custom_rules' => [
+                ['number' => '3', 'word' => 'CustomFizz'],
+                ['number' => '5', 'word' => 'CustomBuzz'],
+                ['number' => '7', 'word' => 'Bar'],
+            ]
+        ]);
+        
+        $result = $method->invoke($this->controller, $request, 100, true);
+        
+        // Rules 3 and 5 should be ignored
+        $this->assertArrayNotHasKey(3, $result['rules']);
+        $this->assertArrayNotHasKey(5, $result['rules']);
+        // Rule 7 should be included
+        $this->assertArrayHasKey(7, $result['rules']);
+        $this->assertEquals('Bar', $result['rules'][7]);
+        // Ignored rules should be tracked
+        $this->assertContains(3, $result['ignored']);
+        $this->assertContains(5, $result['ignored']);
+        $this->assertCount(1, $result['array']); // Only rule 7
+    }
+
+    /**
+     * Test extractCustomRules does not filter standard rules when filterStandardRules is false
+     */
+    public function test_extract_custom_rules_does_not_filter_when_flag_false(): void
+    {
+        $method = $this->getProtectedMethod('extractCustomRules');
+        
+        $request = Request::create('/test', 'GET', [
+            'custom_rules' => [
+                ['number' => '3', 'word' => 'CustomFizz'],
+                ['number' => '5', 'word' => 'CustomBuzz'],
+            ]
+        ]);
+        
+        $result = $method->invoke($this->controller, $request, 100, false);
+        
+        // Rules 3 and 5 should be included when flag is false
+        $this->assertArrayHasKey(3, $result['rules']);
+        $this->assertArrayHasKey(5, $result['rules']);
+        $this->assertEmpty($result['ignored']);
     }
 
     /**
