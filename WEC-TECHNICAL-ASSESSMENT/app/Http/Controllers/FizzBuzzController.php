@@ -48,9 +48,10 @@ class FizzBuzzController extends Controller
                 }
             
                 // Get custom rules from the request (max limit for FizzBuzz)
-                $customRulesData = $this->extractCustomRules($request, self::MAX_FIZZBUZZ);
+                $customRulesData = $this->extractCustomRules($request, self::MAX_FIZZBUZZ, true);
                 $customRules = $customRulesData['rules'];
                 $customRulesArray = $customRulesData['array'];
+                $ignoredRules = $customRulesData['ignored'] ?? [];
 
                 try {
                     $result = $this->processFizzBuzz($inputNumber, $customRules);
@@ -71,6 +72,7 @@ class FizzBuzzController extends Controller
             'inputNumber' => $inputNumber,
             'customRules' => $customRules,
             'customRulesArray' => $customRulesArray ?? [],
+            'ignoredRules' => $ignoredRules ?? [],
             'activeTab' => 'fizzbuzz',
         ]);
     }
@@ -150,9 +152,10 @@ class FizzBuzzController extends Controller
                 }
 
                 // Get custom rules from the request (max limit for Combine)
-                $customRulesData = $this->extractCustomRules($request, self::MAX_COMBINE);
+                $customRulesData = $this->extractCustomRules($request, self::MAX_COMBINE, true);
                 $customRules = $customRulesData['rules'];
                 $combineCustomRulesArray = $customRulesData['array'];
+                $ignoredRules = $customRulesData['ignored'] ?? [];
 
                 try {
                     $combineResult = $this->processCombine($combineInputNumber, $combineStartX, $combineStartY, $customRules);
@@ -174,6 +177,7 @@ class FizzBuzzController extends Controller
             'combineStartX' => $combineStartX,
             'customRules' => $customRules,
             'combineCustomRulesArray' => $combineCustomRulesArray ?? [],
+            'ignoredRules' => $ignoredRules ?? [],
             'activeTab' => 'combine',
         ]);
     }
@@ -292,15 +296,18 @@ class FizzBuzzController extends Controller
     /**
      * Extract and validate custom rules from the request
      * Rules that exceed the max limit are simply ignored (not applied)
+     * Rules for 3 and 5 are ignored if filterStandardRules is true (they're already in the system)
      * 
      * @param Request $request
      * @param int $maxLimit Maximum allowed value for rule numbers (default: MAX_COMBINE)
-     * @return array Returns ['rules' => array, 'array' => array]
+     * @param bool $filterStandardRules If true, filters out rules for 3 and 5 (default: false)
+     * @return array Returns ['rules' => array, 'array' => array, 'ignored' => array]
      */
-    protected function extractCustomRules(Request $request, int $maxLimit = self::MAX_COMBINE): array
+    protected function extractCustomRules(Request $request, int $maxLimit = self::MAX_COMBINE, bool $filterStandardRules = false): array
     {
         $customRules = [];
         $customRulesArray = [];
+        $ignoredRules = [];
         
         if ($request->has('custom_rules')) {
             $rulesInput = $request->input('custom_rules');
@@ -310,6 +317,12 @@ class FizzBuzzController extends Controller
                         && $rule['number'] !== '' && $rule['word'] !== '') {
                         $ruleNumber = (int)$rule['number'];
                         $ruleWord = trim($rule['word']);
+                        
+                        // Check if rule should be ignored (3 or 5 when filterStandardRules is true)
+                        if ($filterStandardRules && ($ruleNumber === 3 || $ruleNumber === 5)) {
+                            $ignoredRules[] = $ruleNumber;
+                            continue;
+                        }
                         
                         // Only add if number is positive, within limits, and word is not empty
                         // Rules exceeding the limit are simply ignored (not applied)
@@ -328,6 +341,7 @@ class FizzBuzzController extends Controller
         return [
             'rules' => $customRules,
             'array' => $customRulesArray,
+            'ignored' => array_unique($ignoredRules),
         ];
     }
 }
