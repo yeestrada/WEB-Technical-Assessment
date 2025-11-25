@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\App;
 
 class FizzBuzzController extends Controller
 {
+    // Maximum limits for each functionality
+    private const MAX_FIZZBUZZ = 100000;
+    private const MAX_FIBONACCI = 10000000;
+    private const MAX_COMBINE = 10000000;
+
     public function __construct()
     {
         // Set the language based on the lang parameter from URL or session
@@ -30,17 +35,30 @@ class FizzBuzzController extends Controller
         if ($request->has('number')) {
             try {
                 $validated = $request->validate([
-                    'number' => 'required|integer|min:0',
+                    'number' => 'required|integer|min:0|max:' . self::MAX_FIZZBUZZ,
                 ]);
 
                 $inputNumber = $validated['number'];
             
-                // Get custom rules from the request
-                $customRulesData = $this->extractCustomRules($request);
+                // Limit maximum number to prevent memory/timeout issues
+                if ($inputNumber > self::MAX_FIZZBUZZ) {
+                    return redirect()->route('fizzbuzz')
+                        ->withErrors(['number' => __('fizzbuzz.validation.max_number_exceeded', ['max' => self::MAX_FIZZBUZZ])])
+                        ->withInput();
+                }
+            
+                // Get custom rules from the request (max limit for FizzBuzz)
+                $customRulesData = $this->extractCustomRules($request, self::MAX_FIZZBUZZ);
                 $customRules = $customRulesData['rules'];
                 $customRulesArray = $customRulesData['array'];
 
-                $result = $this->processFizzBuzz($inputNumber, $customRules);
+                try {
+                    $result = $this->processFizzBuzz($inputNumber, $customRules);
+                } catch (\Exception $e) {
+                    return redirect()->route('fizzbuzz')
+                        ->withErrors(['number' => __('fizzbuzz.validation.processing_error')])
+                        ->withInput();
+                }
             } catch (\Illuminate\Validation\ValidationException $e) {
                 return redirect()->route('fizzbuzz')
                     ->withErrors($e->errors())
@@ -66,15 +84,29 @@ class FizzBuzzController extends Controller
         if ($request->has('number')) {
             try {
                 $validated = $request->validate([
-                    'number' => 'required|integer|min:0',
+                    'number' => 'required|integer|min:0|max:' . self::MAX_FIBONACCI,
+                    'start_x' => 'nullable|integer|min:0|max:' . (self::MAX_FIBONACCI - 1),
                 ]);
 
                 $fibInputNumber = $validated['number'];
-                $startX = $request->input('start_x', 0);
+                $startX = $validated['start_x'] ?? $request->input('start_x', 0);
                 // The second value is automatically the next consecutive number
                 $startY = $startX + 1;
 
-                $fibonacciResult = $this->processFibonacci($fibInputNumber, $startX, $startY);
+                // Limit maximum number to prevent memory/timeout issues
+                if ($fibInputNumber > self::MAX_FIBONACCI) {
+                    return redirect()->route('fibonacci')
+                        ->withErrors(['number' => __('fizzbuzz.validation.max_number_exceeded', ['max' => self::MAX_FIBONACCI])])
+                        ->withInput();
+                }
+
+                try {
+                    $fibonacciResult = $this->processFibonacci($fibInputNumber, $startX, $startY);
+                } catch (\Exception $e) {
+                    return redirect()->route('fibonacci')
+                        ->withErrors(['number' => __('fizzbuzz.validation.processing_error')])
+                        ->withInput();
+                }
             } catch (\Illuminate\Validation\ValidationException $e) {
                 return redirect()->route('fibonacci')
                     ->withErrors($e->errors())
@@ -101,20 +133,34 @@ class FizzBuzzController extends Controller
         if ($request->has('number')) {
             try {
                 $validated = $request->validate([
-                    'number' => 'required|integer|min:0',
+                    'number' => 'required|integer|min:0|max:' . self::MAX_COMBINE,
+                    'start_x' => 'nullable|integer|min:0|max:' . (self::MAX_COMBINE - 1),
                 ]);
 
                 $combineInputNumber = $validated['number'];
-                $combineStartX = $request->input('start_x', 0);
+                $combineStartX = $validated['start_x'] ?? $request->input('start_x', 0);
                 // The second value is automatically the next consecutive number
                 $combineStartY = $combineStartX + 1;
 
-                // Get custom rules from the request
-                $customRulesData = $this->extractCustomRules($request);
+                // Limit maximum number to prevent memory/timeout issues
+                if ($combineInputNumber > self::MAX_COMBINE) {
+                    return redirect()->route('combine')
+                        ->withErrors(['number' => __('fizzbuzz.validation.max_number_exceeded', ['max' => self::MAX_COMBINE])])
+                        ->withInput();
+                }
+
+                // Get custom rules from the request (max limit for Combine)
+                $customRulesData = $this->extractCustomRules($request, self::MAX_COMBINE);
                 $customRules = $customRulesData['rules'];
                 $combineCustomRulesArray = $customRulesData['array'];
 
-                $combineResult = $this->processCombine($combineInputNumber, $combineStartX, $combineStartY, $customRules);
+                try {
+                    $combineResult = $this->processCombine($combineInputNumber, $combineStartX, $combineStartY, $customRules);
+                } catch (\Exception $e) {
+                    return redirect()->route('combine')
+                        ->withErrors(['number' => __('fizzbuzz.validation.processing_error')])
+                        ->withInput();
+                }
             } catch (\Illuminate\Validation\ValidationException $e) {
                 return redirect()->route('combine')
                     ->withErrors($e->errors())
@@ -245,11 +291,13 @@ class FizzBuzzController extends Controller
 
     /**
      * Extract and validate custom rules from the request
+     * Rules that exceed the max limit are simply ignored (not applied)
      * 
      * @param Request $request
+     * @param int $maxLimit Maximum allowed value for rule numbers (default: MAX_COMBINE)
      * @return array Returns ['rules' => array, 'array' => array]
      */
-    protected function extractCustomRules(Request $request): array
+    protected function extractCustomRules(Request $request, int $maxLimit = self::MAX_COMBINE): array
     {
         $customRules = [];
         $customRulesArray = [];
@@ -263,8 +311,9 @@ class FizzBuzzController extends Controller
                         $ruleNumber = (int)$rule['number'];
                         $ruleWord = trim($rule['word']);
                         
-                        // Only add if number is positive and word is not empty
-                        if ($ruleNumber > 0 && $ruleWord !== '') {
+                        // Only add if number is positive, within limits, and word is not empty
+                        // Rules exceeding the limit are simply ignored (not applied)
+                        if ($ruleNumber > 0 && $ruleNumber <= $maxLimit && $ruleWord !== '') {
                             $customRules[$ruleNumber] = $ruleWord;
                             $customRulesArray[] = [
                                 'number' => $ruleNumber,

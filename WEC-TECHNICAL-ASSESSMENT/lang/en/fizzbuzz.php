@@ -65,6 +65,11 @@ return [
     ],
     'validation' => [
         'invalid_number' => 'Please enter a valid number greater than or equal to 0',
+        'invalid_number_max' => 'Please enter a valid number between 0 and :max',
+        'invalid_start_x_max' => 'Please enter a valid number between :min and :max',
+        'invalid_custom_rule_max' => 'Please enter a valid number between 1 and :max for custom rules',
+        'max_number_exceeded' => 'The maximum allowed number is :max.',
+        'processing_error' => 'An error occurred while processing. Please try with a smaller number.',
     ],
     'download' => [
         'fizzbuzz_title' => 'FizzBuzz Results',
